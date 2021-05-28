@@ -1,0 +1,31 @@
+{
+  "name": "@hexlet/code",
+  "version": "1.0.0",
+  "description": "[![Actions Status](https://github.com/kalbasnick/frontend-project-lvl2/workflows/hexlet-check/badge.svg)](https://github.com/kalbasnick/frontend-project-lvl2/actions)",
+  "main": "index.js",
+  "bin": {
+    "gendiff": "bin/gendiff.js"
+  },
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kalbasnick/frontend-project-lvl2.git"
+  },
+  "author": "Nikita Kirichenko",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kalbasnick/frontend-project-lvl2/issues"
+  },
+  "homepage": "https://github.com/kalbasnick/frontend-project-lvl2#readme",
+  "dependencies": {
+    "commander": "^7.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.27.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.23.3"
+  }
+}
