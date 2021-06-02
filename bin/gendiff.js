@@ -1,4 +1,4 @@
 #!/usr/bin/env node
-import consoleManual from '../index.js';
+import runGenDiff from '../index.js';
 
-consoleManual();
+runGenDiff.parse();
