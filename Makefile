@@ -6,3 +6,9 @@ publish:
 
 lint:
 	npx eslint .
+
+test:
+	npm run test
+
+coverage:
+	npx jest --collectCoverage
