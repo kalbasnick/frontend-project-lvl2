@@ -3,6 +3,7 @@ import path from 'path';
 import { beforeAll, expect, test } from '@jest/globals';
 import showDifference from '../src/showDifference.js';
 import parser from '../src/parsers.js';
+import stylish from '../src/stylish.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -19,17 +20,60 @@ beforeAll(() => {
   plainJson2 = parser(getFixturePath('file2.json'));
   plainYaml1 = parser(getFixturePath('file1.yml'));
   plainYaml2 = parser(getFixturePath('file2.yaml'));
-  expectedData = '{\n  -  follow: false\n     host: hexlet.io\n  -  proxy: 123.234.53.22\n  -  timeout: 50\n  +  timeout: 20\n  +  verbose: true\n}';
+  expectedData = `{
+    common: {
+      + follow: false
+        setting1: Value 1
+      - setting2: 200
+      - setting3: true
+      + setting3: null
+      + setting4: blah blah
+      + setting5: {
+            key5: value5
+        }
+        setting6: {
+            doge: {
+              - wow: 
+              + wow: so much
+            }
+            key: value
+          + ops: vops
+        }
+    }
+    group1: {
+      - baz: bas
+      + baz: bars
+        foo: bar
+      - nest: {
+            key: value
+        }
+      + nest: str
+    }
+  - group2: {
+        abc: 12345
+        deep: {
+            id: 45
+        }
+    }
+  + group3: {
+        deep: {
+            id: {
+                number: 45
+            }
+        }
+        fee: 100500
+    }
+}`;
 });
 
-test('compare plain JSON and JSON', () => {
-  expect(showDifference(plainJson1, plainJson2)).toEqual(expectedData);
+test('compare JSON and JSON', () => {
+  expect(stylish(showDifference(plainJson1, plainJson2))).toEqual(expectedData);
 });
 
-test('compare plain JSON and YAML', () => {
-  expect(showDifference(plainJson1, plainYaml2)).toEqual(expectedData);
+test('compare JSON and YAML', () => {
+  expect(stylish(showDifference(plainJson1, plainYaml2))).toEqual(expectedData);
 });
 
-test('compare plain YAML and YAML', () => {
-  expect(showDifference(plainYaml1, plainYaml2)).toEqual(expectedData);
+test('compare YAML and YAML', () => {
+  expect(stylish(showDifference(plainYaml1, plainYaml2))).toEqual(expectedData);
 });

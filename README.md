@@ -13,4 +13,4 @@
 ```
 
 ### Recording of usage:
-[![gendiff](https://asciinema.org/a/eeANefvjju9AUginO9vclE9nq.svg)](https://asciinema.org/a/eeANefvjju9AUginO9vclE9nq)
+[![gendiff](https://asciinema.org/a/ZDpnL9LBiCYav1GWe6FWvnXjN.svg)](https://asciinema.org/a/ZDpnL9LBiCYav1GWe6FWvnXjN)
