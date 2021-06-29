@@ -29,7 +29,7 @@ export default (tree) => {
         case 'unchanged':
           return makeFormattedStr(key, formatIfObject(value, iter));
         default:
-          throw new Error('Wrong status! Status should be "innerPropertyMatch", "unchanged", "changed" or "added"');
+          throw new Error(`Unknown status: ${status}! The status should be: "innerPropertyMatch", "unchanged", "changed" or "added"`);
       }
     });
 

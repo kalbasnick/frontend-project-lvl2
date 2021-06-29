@@ -33,7 +33,7 @@ export default (tree) => {
         case 'unchanged':
           return makeFormattedStr(makeIndent(indentCount), key, iter(value, depth + 1));
         default:
-          throw new Error('Wrong status! The status should be: "innerPropertyMatch", "unchanged", "changed" or "added"');
+          throw new Error(`Unknown status: ${status}! The status should be: "innerPropertyMatch", "unchanged", "changed" or "added"`);
       }
     });
 
