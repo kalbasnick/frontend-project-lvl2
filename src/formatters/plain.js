@@ -1,4 +1,4 @@
-import isObject from '../src/utils.js';
+import isObject from '../utils.js';
 
 export default (tree) => {
   const iter = (node, ancestry = []) => {

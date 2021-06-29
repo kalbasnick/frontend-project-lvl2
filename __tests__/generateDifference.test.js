@@ -8,18 +8,19 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
 
-let plainJson1;
-let plainJson2;
-let plainYaml1;
-let plainYaml2;
+let json1;
+let json2;
+let yaml1;
+let yaml2;
 let expectedDataStylish;
 let expectedDataPlain;
+let expectedDataJson;
 
 beforeAll(() => {
-  plainJson1 = parser(getFixturePath('file1.json'));
-  plainJson2 = parser(getFixturePath('file2.json'));
-  plainYaml1 = parser(getFixturePath('file1.yml'));
-  plainYaml2 = parser(getFixturePath('file2.yaml'));
+  json1 = parser(getFixturePath('file1.json'));
+  json2 = parser(getFixturePath('file2.json'));
+  yaml1 = parser(getFixturePath('file1.yml'));
+  yaml2 = parser(getFixturePath('file2.yaml'));
   expectedDataStylish = `{
     common: {
       + follow: false
@@ -75,28 +76,25 @@ Property 'group1.baz' was updated. From 'bas' to 'bars'
 Property 'group1.nest' was updated. From [complex value] to 'str'
 Property 'group2' was removed
 Property 'group3' was added with value: [complex value]`;
+  expectedDataJson = '{"common":{"+follow":false,"setting1":"Value 1","-setting2":200,"-setting3":true,"+setting3":null,"+setting4":"blah blah","+setting5":{"key5":"value5"},"setting6":{"doge":{"-wow":"","+wow":"so much"},"key":"value","+ops":"vops"}},"group1":{"-baz":"bas","+baz":"bars","foo":"bar","-nest":{"key":"value"},"+nest":"str"},"-group2":{"abc":12345,"deep":{"id":45}},"+group3":{"deep":{"id":{"number":45}},"fee":100500}}';
 });
 
-test('stylish format compare JSON and JSON', () => {
-  expect(genDiff(plainJson1, plainJson2, 'stylish')).toEqual(expectedDataStylish);
+test('stylish formatter JSON and JSON', () => {
+  expect(genDiff(json1, json2, 'stylish')).toEqual(expectedDataStylish);
 });
 
-test('stylish format compare JSON and YAML', () => {
-  expect(genDiff(plainJson1, plainYaml2, 'stylish')).toEqual(expectedDataStylish);
+test('stylish formatter JSON and YAML', () => {
+  expect(genDiff(json1, yaml2, 'stylish')).toEqual(expectedDataStylish);
 });
 
-test('stylish format compare YAML and YAML', () => {
-  expect(genDiff(plainYaml1, plainYaml2, 'stylish')).toEqual(expectedDataStylish);
+test('stylish formatter YAML and YAML', () => {
+  expect(genDiff(yaml1, yaml2, 'stylish')).toEqual(expectedDataStylish);
 });
 
-test('plain format compare JSON and JSON', () => {
-  expect(genDiff(plainJson1, plainJson2, 'plain')).toEqual(expectedDataPlain);
+test('plain formatter', () => {
+  expect(genDiff(json1, json2, 'plain')).toEqual(expectedDataPlain);
 });
 
-test('plain format compare JSON and YAML', () => {
-  expect(genDiff(plainJson1, plainYaml2, 'plain')).toEqual(expectedDataPlain);
-});
-
-test('plain format compare YAML and YAML', () => {
-  expect(genDiff(plainYaml1, plainYaml2, 'plain')).toEqual(expectedDataPlain);
+test('json formatter', () => {
+  expect(genDiff(json1, json2, 'json')).toEqual(expectedDataJson);
 });

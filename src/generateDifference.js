@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import isObject from './utils.js';
-import selectFormat from '../formatters/index.js';
+import selectFormat from './formatters/index.js';
 
 const genDiff = (file1, file2, formatName) => {
   const iter = (data1, data2) => {
