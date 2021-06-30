@@ -6,7 +6,7 @@ const stylish = (arg1, arg2) => genDiff(arg1, arg2, 'stylish');
 const plain = (arg1, arg2) => genDiff(arg1, arg2, 'plain');
 const json = (arg1, arg2) => genDiff(arg1, arg2, 'json');
 
-export default program
+export default () => program
   .description('Compares two configuration files and shows a difference.')
   .version('0.0.1', '-V, --version', 'output the version number')
   .arguments('<filepath1> <filepath2>')
