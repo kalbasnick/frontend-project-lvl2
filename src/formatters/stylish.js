@@ -5,10 +5,11 @@ export default (tree) => {
     const indentIncrement = 4;
     const indentCount = indentIncrement * depth;
     const makeIndent = (separatorCount, diffOperator = ' ', separator = ' ') => `\n${diffOperator.padStart(separatorCount - diffOperator.length)}${separator}`;
-    const makeFormattedStr = (indentSettings, keyName, keyValue) => `${indentSettings}${keyName}: ${keyValue}`;
+    const makeFormattedStr = (indentSettings, parentName, childrenName) => `${indentSettings}${parentName}: ${childrenName}`;
+    const makeFormattedChildren = (value, callback, acc) => callback(value, acc);
 
     if (isObject(node)) {
-      const result = Object.keys(node).reduce((acc, key) => `${acc}${makeFormattedStr(makeIndent(indentCount), key, iter(node[key], depth + 1))}`, '{');
+      const result = Object.keys(node).reduce((acc, parent) => `${acc}${makeFormattedStr(makeIndent(indentCount), parent, makeFormattedChildren(node[parent], iter, depth + 1))}`, '{');
 
       return `${result}${makeIndent(indentCount - indentIncrement)}}`;
     }
@@ -18,22 +19,22 @@ export default (tree) => {
     }
 
     const result = node.flatMap((element) => {
-      const [key, value, { status }] = element;
+      const [parent, children, { status }] = element;
       switch (status) {
         case 'innerPropertyMatch':
-          return makeFormattedStr(makeIndent(indentCount), key, `{${iter(value, depth + 1)}${makeIndent(indentCount)}}`);
+          return makeFormattedStr(makeIndent(indentCount), parent, `{${makeFormattedChildren(children, iter, depth + 1)}${makeIndent(indentCount)}}`);
         case 'changed': {
-          const [oldValue, newValue] = value;
-          return `${makeFormattedStr(makeIndent(indentCount, '-'), key, iter(oldValue, depth + 1))}${makeFormattedStr(makeIndent(indentCount, '+'), key, iter(newValue, depth + 1))}`;
+          const [removedChildren, addedChildren] = children;
+          return `${makeFormattedStr(makeIndent(indentCount, '-'), parent, makeFormattedChildren(removedChildren, iter, depth + 1))}${makeFormattedStr(makeIndent(indentCount, '+'), parent, makeFormattedChildren(addedChildren, iter, depth + 1))}`;
         }
         case 'added':
-          return makeFormattedStr(makeIndent(indentCount, '+'), key, iter(value, depth + 1));
+          return makeFormattedStr(makeIndent(indentCount, '+'), parent, makeFormattedChildren(children, iter, depth + 1));
         case 'removed':
-          return makeFormattedStr(makeIndent(indentCount, '-'), key, iter(value, depth + 1));
+          return makeFormattedStr(makeIndent(indentCount, '-'), parent, makeFormattedChildren(children, iter, depth + 1));
         case 'unchanged':
-          return makeFormattedStr(makeIndent(indentCount), key, iter(value, depth + 1));
+          return makeFormattedStr(makeIndent(indentCount, ' '), parent, makeFormattedChildren(children, iter, depth + 1));
         default:
-          throw new Error(`Unknown status: ${status}! The status should be: "innerPropertyMatch", "unchanged", "changed" or "added"`);
+          throw new Error(`Unknown status: "${status}"! The status should be: "innerPropertyMatch", "unchanged", "changed" or "added"`);
       }
     });
 

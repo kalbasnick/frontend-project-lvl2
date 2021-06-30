@@ -2,11 +2,11 @@ import isObject from '../utils.js';
 
 export default (tree) => {
   const iter = (node) => {
-    const makeFormattedStr = (key, value, operator = '') => `"${operator}${key}":${value}`;
-    const formatIfObject = (item, callback) => (isObject(item) ? `{${callback(item)}}` : callback(item));
+    const makeFormattedStr = (parentName, childrenName, operator = '') => `"${operator}${parentName}":${childrenName}`;
+    const makeFormattedChildren = (item, callback) => (isObject(item) ? `{${callback(item)}}` : callback(item));
 
     if (isObject(node)) {
-      return Object.keys(node).map((key) => makeFormattedStr(key, formatIfObject(node[key], iter))).join(',');
+      return Object.keys(node).map((key) => makeFormattedStr(key, makeFormattedChildren(node[key], iter))).join(',');
     }
 
     if (!Array.isArray(node)) {
@@ -14,22 +14,22 @@ export default (tree) => {
     }
 
     const result = node.flatMap((element) => {
-      const [key, value, { status }] = element;
+      const [parent, children, { status }] = element;
       switch (status) {
         case 'innerPropertyMatch':
-          return `${makeFormattedStr(key, `{${iter(value)}`)}}`;
+          return makeFormattedStr(parent, `{${makeFormattedChildren(children, iter)}}`);
         case 'changed': {
-          const [oldValue, newValue] = value;
-          return `${makeFormattedStr(key, formatIfObject(oldValue, iter), '-')},${makeFormattedStr(key, formatIfObject(newValue, iter), '+')}`;
+          const [removedChildren, addedChildren] = children;
+          return `${makeFormattedStr(parent, makeFormattedChildren(removedChildren, iter), '-')},${makeFormattedStr(parent, makeFormattedChildren(addedChildren, iter), '+')}`;
         }
         case 'added':
-          return makeFormattedStr(key, formatIfObject(value, iter), '+');
+          return makeFormattedStr(parent, makeFormattedChildren(children, iter), '+');
         case 'removed':
-          return makeFormattedStr(key, formatIfObject(value, iter), '-');
+          return makeFormattedStr(parent, makeFormattedChildren(children, iter), '-');
         case 'unchanged':
-          return makeFormattedStr(key, formatIfObject(value, iter));
+          return makeFormattedStr(parent, makeFormattedChildren(children, iter));
         default:
-          throw new Error(`Unknown status: ${status}! The status should be: "innerPropertyMatch", "unchanged", "changed" or "added"`);
+          throw new Error(`Unknown status: "${status}"! The status should be: "innerPropertyMatch", "unchanged", "changed" or "added"`);
       }
     });
 

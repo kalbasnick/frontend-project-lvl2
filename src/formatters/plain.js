@@ -3,30 +3,30 @@ import isObject from '../utils.js';
 export default (tree) => {
   const iter = (node, ancestry = []) => {
     const result = node.flatMap((element) => {
-      const [key, value, { status }] = element;
+      const [parent, children, { status }] = element;
       const makePath = (path) => path.join('.');
-      const formatValueOutput = (givenValue) => {
-        if (isObject(givenValue)) {
+      const makeFormattedChildren = (childrenName) => {
+        if (isObject(childrenName)) {
           return '[complex value]';
         }
 
-        return typeof givenValue === 'string' ? `'${givenValue}'` : givenValue;
+        return typeof childrenName === 'string' ? `'${childrenName}'` : childrenName;
       };
       switch (status) {
         case 'innerPropertyMatch':
-          return iter(value, [...ancestry, key]);
+          return iter(children, [...ancestry, parent]);
         case 'changed': {
-          const [oldValue, newValue] = value;
-          return `Property '${makePath([...ancestry, key])}' was updated. From ${formatValueOutput(oldValue)} to ${formatValueOutput(newValue)}`;
+          const [removedChildren, addedChildren] = children;
+          return `Property '${makePath([...ancestry, parent])}' was updated. From ${makeFormattedChildren(removedChildren)} to ${makeFormattedChildren(addedChildren)}`;
         }
         case 'added':
-          return `Property '${makePath([...ancestry, key])}' was added with value: ${formatValueOutput(value)}`;
+          return `Property '${makePath([...ancestry, parent])}' was added with value: ${makeFormattedChildren(children)}`;
         case 'removed':
-          return `Property '${makePath([...ancestry, key])}' was removed`;
+          return `Property '${makePath([...ancestry, parent])}' was removed`;
         case 'unchanged':
           return [];
         default:
-          throw new Error(`Unknown status: ${status}! The status should be: "innerPropertyMatch", "unchanged", "changed" or "added"`);
+          throw new Error(`Unknown status: "${status}"! The status should be: "innerPropertyMatch", "unchanged", "changed" or "added"`);
       }
     });
 
