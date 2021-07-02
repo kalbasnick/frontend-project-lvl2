@@ -23,4 +23,4 @@ export default () => program
         return console.log(stylish(parseFilepath(filepath1), parseFilepath(filepath2)));
     }
   })
-  .parse();
+  .parse(process.argv);
