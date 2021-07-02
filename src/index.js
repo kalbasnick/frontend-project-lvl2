@@ -22,4 +22,5 @@ export default () => program
       default:
         return console.log(stylish(parseFilepath(filepath1), parseFilepath(filepath2)));
     }
-  });
+  })
+  .parse();
