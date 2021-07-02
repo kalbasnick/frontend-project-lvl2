@@ -6,7 +6,7 @@ const stylish = (arg1, arg2) => genDiff(arg1, arg2, 'stylish');
 const plain = (arg1, arg2) => genDiff(arg1, arg2, 'plain');
 const json = (arg1, arg2) => genDiff(arg1, arg2, 'json');
 
-export default program
+program
   .description('Compares two configuration files and shows a difference.')
   .version('0.0.1', '-V, --version', 'output the version number')
   .arguments('<filepath1> <filepath2>')
@@ -15,11 +15,16 @@ export default program
   .action((filepath1, filepath2, options) => {
     switch (options.format) {
       case 'plain':
-        return console.log(plain(parseFilepath(filepath1), parseFilepath(filepath2)));
+        console.log(plain(parseFilepath(filepath1), parseFilepath(filepath2)));
+        break;
       case 'json':
-        return console.log(json(parseFilepath(filepath1), parseFilepath(filepath2)));
+        console.log(json(parseFilepath(filepath1), parseFilepath(filepath2)));
+        break;
       case 'stylish':
       default:
-        return console.log(stylish(parseFilepath(filepath1), parseFilepath(filepath2)));
+        console.log(stylish(parseFilepath(filepath1), parseFilepath(filepath2)));
+        break;
     }
   });
+
+export default program.parse();
