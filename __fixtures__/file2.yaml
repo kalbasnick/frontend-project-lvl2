@@ -1,4 +1,3 @@
----
 common:
   follow: false
   setting1: Value 1
@@ -11,10 +10,12 @@ common:
     ops: vops
     doge:
       wow: so much
+
 group1:
   foo: bar
   baz: bars
   nest: str
+
 group3:
   deep:
     id:

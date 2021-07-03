@@ -8,6 +8,7 @@ export default (filepath) => {
       return JSON.parse(fs.readFileSync(path.resolve(filepath), 'utf-8'));
     case '.yml':
     case '.yaml':
+      console.log(fs.readFileSync(path.resolve(filepath), 'utf-8'));
       return yaml.load(fs.readFileSync(path.resolve(filepath), 'utf-8'));
     default:
       throw new Error('The file extension should be JSON or YAML');
