@@ -27,4 +27,4 @@ program
     }
   });
 
-export default program.parse();
+export default () => program.parse();
