@@ -12,6 +12,7 @@ program
   .arguments('<filepath1> <filepath2>')
   .helpOption('-h, --help', 'output usage information')
   .option('-f, --format [type]', 'output format', 'stylish')
+  .allowUnknownOption()
   .action((filepath1, filepath2, options) => {
     switch (options.format) {
       case 'plain':
