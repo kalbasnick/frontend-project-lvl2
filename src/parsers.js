@@ -3,6 +3,7 @@ import path from 'path';
 import yaml from 'js-yaml';
 
 export default (filepath) => {
+  console.log(filepath);
   switch (path.extname(filepath)) {
     case '':
     case '.json':
