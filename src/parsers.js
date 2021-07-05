@@ -4,13 +4,13 @@ import yaml from 'js-yaml';
 
 export default (filepath) => {
   switch (path.extname(filepath)) {
+    case '':
     case '.json':
       return JSON.parse(fs.readFileSync(path.resolve(filepath), 'utf-8'));
     case '.yml':
     case '.yaml':
       return yaml.load(fs.readFileSync(path.resolve(filepath), 'utf-8'));
     default:
-      return filepath;
-      // throw new Error(`Wrong file extension: ${path.extname(filepath)}! The file extension should be JSON or YAML`);
+      throw new Error(`Wrong file extension: ${path.extname(filepath)}! The file extension should be JSON or YAML`);
   }
 };
