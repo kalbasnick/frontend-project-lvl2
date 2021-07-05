@@ -2,7 +2,7 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import { beforeAll, expect, test } from '@jest/globals';
 import parser from '../src/parsers.js';
-import genDiff from '../src/generateDifference';
+import genDiff from '../src/index';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
