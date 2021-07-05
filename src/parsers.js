@@ -10,6 +10,7 @@ export default (filepath) => {
     case '.yaml':
       return yaml.load(fs.readFileSync(path.resolve(filepath), 'utf-8'));
     default:
-      throw new Error(`Wrong file extension: ${path.extname(filepath)}! The file extension should be JSON or YAML`);
+      return filepath;
+      // throw new Error(`Wrong file extension: ${path.extname(filepath)}! The file extension should be JSON or YAML`);
   }
 };
