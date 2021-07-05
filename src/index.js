@@ -2,7 +2,7 @@ import program from 'commander';
 import genDiff from './generateDifference.js';
 import parseFilepath from './parsers.js';
 
-const stylish = (arg1, arg2) => genDiff(arg1, arg2, 'stylish');
+// const stylish = (arg1, arg2) => genDiff(arg1, arg2, 'stylish');
 const plain = (arg1, arg2) => genDiff(arg1, arg2, 'plain');
 const json = (arg1, arg2) => genDiff(arg1, arg2, 'json');
 
@@ -20,8 +20,9 @@ export default () => program
         return console.log(json(parseFilepath(filepath1), parseFilepath(filepath2)));
       case 'stylish':
       default:
-        return console.log(stylish(parseFilepath(filepath1), parseFilepath(filepath2)));
+        return console.log(genDiff(parseFilepath(filepath1), parseFilepath(filepath2), 'stylish'));
+        // return console.log(stylish(parseFilepath(filepath1), parseFilepath(filepath2)));
     }
   })
   .allowUnknownOption()
-  .parse(process.argv);
+  .parse();
