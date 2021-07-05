@@ -1,19 +1,17 @@
-import stylish from './stylish.js';
-import plain from './plain.js';
-import json from './json.js';
-
-const runFormatter = (formatterFunc, data) => formatterFunc(data);
+import runStylishFormatter from './stylish.js';
+import runPlainFormatter from './plain.js';
+import runJsonFormatter from './json.js';
 
 export default (data, formatName) => {
   switch (formatName) {
     case 'stylish':
-      return runFormatter(stylish, data);
+      return runStylishFormatter(data);
     case 'plain':
-      return runFormatter(plain, data);
+      return runPlainFormatter(data);
     case '':
     case 'json':
-      return runFormatter(json, data);
+      return runJsonFormatter(data);
     default:
-      throw new Error('Wrong format! Available formats: "stylish", "plain" or "json"');
+      throw new Error(`Wrong format: "${formatName}"! Available formats: "stylish", "plain" or "json"`);
   }
 };
