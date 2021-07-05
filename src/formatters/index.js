@@ -10,6 +10,7 @@ export default (data, formatName) => {
       return runFormatter(stylish, data);
     case 'plain':
       return runFormatter(plain, data);
+    case '':
     case 'json':
       return runFormatter(json, data);
     default:
