@@ -1,7 +1,6 @@
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { beforeAll, expect, test } from '@jest/globals';
-import parser from '../src/parsers.js';
 import genDiff from '../src/index';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -17,10 +16,10 @@ let expectedDataPlain;
 let expectedDataJson;
 
 beforeAll(() => {
-  json1 = parser(getFixturePath('file1.json'));
-  json2 = parser(getFixturePath('file2.json'));
-  yaml1 = parser(getFixturePath('file1.yml'));
-  yaml2 = parser(getFixturePath('file2.yaml'));
+  json1 = getFixturePath('file1.json');
+  json2 = getFixturePath('file2.json');
+  yaml1 = getFixturePath('file1.yml');
+  yaml2 = getFixturePath('file2.yaml');
   expectedDataStylish = `{
     common: {
       + follow: false

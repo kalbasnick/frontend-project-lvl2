@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import program from 'commander';
 import runGenDiff from '../src/index.js';
-import parseFilepath from '../src/parsers.js';
 
 program
   .description('Compares two configuration files and shows a difference.')
@@ -12,12 +11,12 @@ program
   .action((filepath1, filepath2, options) => {
     switch (options.format) {
       case 'plain':
-        return console.log(runGenDiff(parseFilepath(filepath1), parseFilepath(filepath2), 'plain'));
+        return console.log(runGenDiff(filepath1, filepath2, 'plain'));
       case 'json':
-        return console.log(runGenDiff(parseFilepath(filepath1), parseFilepath(filepath2), 'json'));
+        return console.log(runGenDiff(filepath1, filepath2, 'json'));
       case 'stylish':
       default:
-        return console.log(runGenDiff(parseFilepath(filepath1), parseFilepath(filepath2), 'stylish'));
+        return console.log(runGenDiff(filepath1, filepath2, 'stylish'));
     }
   })
   .allowUnknownOption()
