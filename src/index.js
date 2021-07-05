@@ -15,15 +15,13 @@ export default () => program
   .action((filepath1, filepath2, options) => {
     switch (options.format) {
       case 'plain':
-        console.log(plain(parseFilepath(filepath1), parseFilepath(filepath2)));
-        break;
+        return console.log(plain(parseFilepath(filepath1), parseFilepath(filepath2)));
       case 'json':
-        console.log(json(parseFilepath(filepath1), parseFilepath(filepath2)));
-        break;
+        return console.log(json(parseFilepath(filepath1), parseFilepath(filepath2)));
       case 'stylish':
       default:
-        console.log(stylish(parseFilepath(filepath1), parseFilepath(filepath2)));
-        break;
+        return console.log(stylish(parseFilepath(filepath1), parseFilepath(filepath2)));
     }
   })
-  .allowUnknownOption();
+  .allowUnknownOption()
+  .parse(process.argv);
