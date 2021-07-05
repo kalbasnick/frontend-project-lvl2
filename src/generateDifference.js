@@ -1,8 +1,7 @@
 import _ from 'lodash';
 import isObject from './utils.js';
-import selectFormat from './formatters/index.js';
 
-const genDiff = (file1, file2, formatName) => {
+export default (file1, file2) => {
   const iter = (data1, data2) => {
     const keys = _.sortBy(_.uniq([...Object.keys(data1), ...Object.keys(data2)]));
 
@@ -27,7 +26,5 @@ const genDiff = (file1, file2, formatName) => {
     });
   };
 
-  return selectFormat(iter(file1, file2), formatName);
+  return iter(file1, file2);
 };
-
-export default genDiff;
