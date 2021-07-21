@@ -1,16 +1,14 @@
-import fs from 'fs';
-import path from 'path';
 import yaml from 'js-yaml';
 
-export default (filepath) => {
-  switch (path.extname(filepath)) {
+export default (file, extension) => {
+  switch (extension) {
     case '':
     case '.json':
-      return JSON.parse(fs.readFileSync(path.resolve(process.cwd(), filepath), 'utf-8'));
+      return JSON.parse(file);
     case '.yml':
     case '.yaml':
-      return yaml.load(fs.readFileSync(path.resolve(process.cwd(), filepath), 'utf-8'));
+      return yaml.load(file);
     default:
-      throw new Error(`Wrong file extension: ${path.extname(filepath)}! The file extension should be JSON or YAML`);
+      throw new Error(`Wrong file extension: ${extension}! The file extension should be JSON or YAML`);
   }
 };
