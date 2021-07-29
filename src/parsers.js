@@ -1,14 +1,14 @@
 import yaml from 'js-yaml';
 
-export default (file, extension) => {
-  switch (extension) {
+export default (data, format) => {
+  switch (format) {
     case '':
     case '.json':
-      return JSON.parse(file);
+      return JSON.parse(data);
     case '.yml':
     case '.yaml':
-      return yaml.load(file);
+      return yaml.load(data);
     default:
-      throw new Error(`Wrong file extension: ${extension}! The file extension should be JSON or YAML`);
+      throw new Error(`Wrong format: ${format}! The format should be JSON or YAML`);
   }
 };

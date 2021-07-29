@@ -1,3 +1,4 @@
-import _ from 'lodash';
+import path from 'path';
+import fs from 'fs';
 
-export default (data) => _.isObjectLike(data) && !Array.isArray(data);
+export default (pathToFile) => fs.readFileSync(path.resolve(process.cwd(), pathToFile), 'utf-8');

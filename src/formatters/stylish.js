@@ -1,4 +1,4 @@
-import isObject from '../utils.js';
+import _ from 'lodash';
 
 export default (tree) => {
   const iter = (node, depth = 1) => {
@@ -8,7 +8,7 @@ export default (tree) => {
     const makeFormattedStr = (indentSettings, parentName, childrenName) => `${indentSettings}${parentName}: ${childrenName}`;
     const makeFormattedChildren = (value, callback, acc) => callback(value, acc);
 
-    if (isObject(node)) {
+    if (_.isPlainObject(node)) {
       const result = Object.keys(node).reduce((acc, parent) => `${acc}${makeFormattedStr(makeIndent(indentCount), parent, makeFormattedChildren(node[parent], iter, depth + 1))}`, '{');
 
       return `${result}${makeIndent(indentCount - indentIncrement)}}`;
@@ -19,9 +19,9 @@ export default (tree) => {
     }
 
     const result = node.flatMap((element) => {
-      const [parent, children, { status }] = element;
-      switch (status) {
-        case 'innerPropertyMatch':
+      const { parent, children, type } = element;
+      switch (type) {
+        case 'nested':
           return makeFormattedStr(makeIndent(indentCount), parent, `{${makeFormattedChildren(children, iter, depth + 1)}${makeIndent(indentCount)}}`);
         case 'changed': {
           const [removedChildren, addedChildren] = children;
@@ -34,7 +34,7 @@ export default (tree) => {
         case 'unchanged':
           return makeFormattedStr(makeIndent(indentCount, ' '), parent, makeFormattedChildren(children, iter, depth + 1));
         default:
-          throw new Error(`Unknown status: "${status}"! The status should be: "innerPropertyMatch", "unchanged", "changed" or "added"`);
+          throw new Error(`Unknown type: "${type}"! The type should be: "innerPropertyMatch", "unchanged", "changed" or "added"`);
       }
     });
 

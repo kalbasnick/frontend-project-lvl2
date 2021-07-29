@@ -1,11 +1,11 @@
-import isObject from '../utils.js';
+import _ from 'lodash';
 
 export default (tree) => {
   const iter = (node) => {
     const makeFormattedStr = (parentName, childrenName, operator = '') => `"${operator}${parentName}":${childrenName}`;
-    const makeFormattedChildren = (item, callback) => (isObject(item) ? `{${callback(item)}}` : callback(item));
+    const makeFormattedChildren = (item, callback) => (_.isPlainObject(item) ? `{${callback(item)}}` : callback(item));
 
-    if (isObject(node)) {
+    if (_.isPlainObject(node)) {
       return Object.keys(node).map((key) => makeFormattedStr(key, makeFormattedChildren(node[key], iter))).join(',');
     }
 
@@ -14,9 +14,9 @@ export default (tree) => {
     }
 
     const result = node.flatMap((element) => {
-      const [parent, children, { status }] = element;
-      switch (status) {
-        case 'innerPropertyMatch':
+      const { parent, children, type } = element;
+      switch (type) {
+        case 'nested':
           return makeFormattedStr(parent, `{${makeFormattedChildren(children, iter)}}`);
         case 'changed': {
           const [removedChildren, addedChildren] = children;
@@ -29,7 +29,7 @@ export default (tree) => {
         case 'unchanged':
           return makeFormattedStr(parent, makeFormattedChildren(children, iter));
         default:
-          throw new Error(`Unknown status: "${status}"! The status should be: "innerPropertyMatch", "unchanged", "changed" or "added"`);
+          throw new Error(`Unknown type: "${type}"! The type should be: "innerPropertyMatch", "unchanged", "changed" or "added"`);
       }
     });
 

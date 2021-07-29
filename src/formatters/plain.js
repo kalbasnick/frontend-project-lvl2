@@ -1,19 +1,19 @@
-import isObject from '../utils.js';
+import _ from 'lodash';
 
 export default (tree) => {
   const iter = (node, ancestry = []) => {
     const result = node.flatMap((element) => {
-      const [parent, children, { status }] = element;
+      const { parent, children, type } = element;
       const makePath = (path) => path.join('.');
       const makeFormattedChildren = (childrenName) => {
-        if (isObject(childrenName)) {
+        if (_.isPlainObject(childrenName)) {
           return '[complex value]';
         }
 
         return typeof childrenName === 'string' ? `'${childrenName}'` : childrenName;
       };
-      switch (status) {
-        case 'innerPropertyMatch':
+      switch (type) {
+        case 'nested':
           return iter(children, [...ancestry, parent]);
         case 'changed': {
           const [removedChildren, addedChildren] = children;
@@ -26,7 +26,7 @@ export default (tree) => {
         case 'unchanged':
           return [];
         default:
-          throw new Error(`Unknown status: "${status}"! The status should be: "innerPropertyMatch", "unchanged", "changed" or "added"`);
+          throw new Error(`Unknown status: "${type}"! The status should be: "innerPropertyMatch", "unchanged", "changed" or "added"`);
       }
     });
 

@@ -1,12 +1,12 @@
 import path from 'path';
-import fs from 'fs';
-import parseFileByExtension from './parsers.js';
+import readFile from './utils.js';
+import parseData from './parsers.js';
 import makeInnerTree from './innerTreeMaker.js';
 import format from './formatters/index.js';
 
 export default (filePath1, filePath2, formatName = 'stylish') => {
-  const readFile = (pathToFile) => fs.readFileSync(path.resolve(process.cwd(), pathToFile), 'utf-8');
-  const parseFile = (file) => parseFileByExtension(readFile(file), path.extname(file));
+  const parsedData1 = parseData(readFile(filePath1), path.extname(filePath1));
+  const parsedData2 = parseData(readFile(filePath2), path.extname(filePath2));
 
-  return format(makeInnerTree(parseFile(filePath1), parseFile(filePath2)), formatName);
+  return format(makeInnerTree(parsedData1, parsedData2), formatName);
 };
