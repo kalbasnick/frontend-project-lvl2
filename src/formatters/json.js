@@ -1,12 +1,12 @@
 import _ from 'lodash';
 
 export default (tree) => {
-  const iter = (node) => {
-    const makeFormattedStr = (parentName, childrenName, operator = '') => `"${operator}${parentName}":${childrenName}`;
-    const makeFormattedChildren = (item, callback) => (_.isPlainObject(item) ? `{${callback(item)}}` : callback(item));
+  const buildFormattedNode = (node) => {
+    const makeFormattedLine = (keyName, valueName, operator = '') => `"${operator}${keyName}":${valueName}`;
+    const makeFormattedvalue = (item, callback) => (_.isPlainObject(item) ? `{${callback(item)}}` : callback(item));
 
     if (_.isPlainObject(node)) {
-      return Object.keys(node).map((key) => makeFormattedStr(key, makeFormattedChildren(node[key], iter))).join(',');
+      return Object.keys(node).map((key) => makeFormattedLine(key, makeFormattedvalue(node[key], buildFormattedNode))).join(',');
     }
 
     if (!Array.isArray(node)) {
@@ -14,20 +14,20 @@ export default (tree) => {
     }
 
     const result = node.flatMap((element) => {
-      const { parent, children, type } = element;
+      const { key, value, type } = element;
       switch (type) {
         case 'nested':
-          return makeFormattedStr(parent, `{${makeFormattedChildren(children, iter)}}`);
+          return makeFormattedLine(key, `{${makeFormattedvalue(value, buildFormattedNode)}}`);
         case 'changed': {
-          const [removedChildren, addedChildren] = children;
-          return `${makeFormattedStr(parent, makeFormattedChildren(removedChildren, iter), '-')},${makeFormattedStr(parent, makeFormattedChildren(addedChildren, iter), '+')}`;
+          const [removedValue, addedValue] = value;
+          return `${makeFormattedLine(key, makeFormattedvalue(removedValue, buildFormattedNode), '-')},${makeFormattedLine(key, makeFormattedvalue(addedValue, buildFormattedNode), '+')}`;
         }
         case 'added':
-          return makeFormattedStr(parent, makeFormattedChildren(children, iter), '+');
+          return makeFormattedLine(key, makeFormattedvalue(value, buildFormattedNode), '+');
         case 'removed':
-          return makeFormattedStr(parent, makeFormattedChildren(children, iter), '-');
+          return makeFormattedLine(key, makeFormattedvalue(value, buildFormattedNode), '-');
         case 'unchanged':
-          return makeFormattedStr(parent, makeFormattedChildren(children, iter));
+          return makeFormattedLine(key, makeFormattedvalue(value, buildFormattedNode));
         default:
           throw new Error(`Unknown type: "${type}"! The type should be: "innerPropertyMatch", "unchanged", "changed" or "added"`);
       }
@@ -36,5 +36,5 @@ export default (tree) => {
     return `${result.join(',')}`;
   };
 
-  return `{${iter(tree)}}`;
+  return `{${buildFormattedNode(tree)}}`;
 };

@@ -1,12 +1,13 @@
-import path from 'path';
-import readFile from './utils.js';
+import readFile, { extractFormat, buildFullPathToFile } from './utils.js';
 import parseData from './parsers.js';
-import makeInnerTree from './innerTreeMaker.js';
+import buildInnerTree from './innerTreeBuilder.js';
 import format from './formatters/index.js';
 
 export default (filePath1, filePath2, formatName = 'stylish') => {
-  const parsedData1 = parseData(readFile(filePath1), path.extname(filePath1));
-  const parsedData2 = parseData(readFile(filePath2), path.extname(filePath2));
+  const fullPathToFile1 = buildFullPathToFile(filePath1);
+  const fullPathToFile2 = buildFullPathToFile(filePath2);
+  const data1 = parseData(readFile(fullPathToFile1), extractFormat(filePath1));
+  const data2 = parseData(readFile(fullPathToFile2), extractFormat(filePath2));
 
-  return format(makeInnerTree(parsedData1, parsedData2), formatName);
+  return format(buildInnerTree(data1, data2), formatName);
 };

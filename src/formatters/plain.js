@@ -1,28 +1,28 @@
 import _ from 'lodash';
 
 export default (tree) => {
-  const iter = (node, ancestry = []) => {
+  const buildFormattedNode = (node, ancestry = []) => {
     const result = node.flatMap((element) => {
-      const { parent, children, type } = element;
+      const { key, value, type } = element;
       const makePath = (path) => path.join('.');
-      const makeFormattedChildren = (childrenName) => {
-        if (_.isPlainObject(childrenName)) {
+      const makeFormattedvalue = (valueName) => {
+        if (_.isPlainObject(valueName)) {
           return '[complex value]';
         }
 
-        return typeof childrenName === 'string' ? `'${childrenName}'` : childrenName;
+        return typeof valueName === 'string' ? `'${valueName}'` : valueName;
       };
       switch (type) {
         case 'nested':
-          return iter(children, [...ancestry, parent]);
+          return buildFormattedNode(value, [...ancestry, key]);
         case 'changed': {
-          const [removedChildren, addedChildren] = children;
-          return `Property '${makePath([...ancestry, parent])}' was updated. From ${makeFormattedChildren(removedChildren)} to ${makeFormattedChildren(addedChildren)}`;
+          const [removedValue, addedValue] = value;
+          return `Property '${makePath([...ancestry, key])}' was updated. From ${makeFormattedvalue(removedValue)} to ${makeFormattedvalue(addedValue)}`;
         }
         case 'added':
-          return `Property '${makePath([...ancestry, parent])}' was added with value: ${makeFormattedChildren(children)}`;
+          return `Property '${makePath([...ancestry, key])}' was added with value: ${makeFormattedvalue(value)}`;
         case 'removed':
-          return `Property '${makePath([...ancestry, parent])}' was removed`;
+          return `Property '${makePath([...ancestry, key])}' was removed`;
         case 'unchanged':
           return [];
         default:
@@ -33,5 +33,5 @@ export default (tree) => {
     return result.join('\n');
   };
 
-  return iter(tree);
+  return buildFormattedNode(tree);
 };
