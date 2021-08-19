@@ -10,16 +10,16 @@ export default (tree) => {
 
       switch (type) {
         case 'nested':
-          return `${JSON.stringify(element.key)}:{${buildFormattedNode(element.value)}}`;
+          return `${JSON.stringify(key)}:{${buildFormattedNode(value)}}`;
         case 'changed': {
           const removedValue = data.value1;
           const addedValue = data.value2;
-          return `${typeDesignations.removed}${JSON.stringify(key)}:${JSON.stringify(removedValue)},${typeDesignations.added}${JSON.stringify(key)}:${JSON.stringify(addedValue)}`;
+          return `${JSON.stringify(`${typeDesignations.removed}${key}`)}:${JSON.stringify(removedValue)},${JSON.stringify(`${typeDesignations.added}${key}`)}:${JSON.stringify(addedValue)}`;
         }
         case 'added':
         case 'removed':
         case 'unchanged':
-          return `${typeDesignations[type]}${JSON.stringify(key)}:${JSON.stringify(value)}`;
+          return `${JSON.stringify(`${typeDesignations[type]}${key}`)}:${JSON.stringify(value)}`;
         default:
           throw new Error(`Unknown status: "${type}"! The status should be: "nested", "unchanged", "changed" or "added"`);
       }
