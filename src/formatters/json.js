@@ -1,40 +1,32 @@
-import _ from 'lodash';
-
 export default (tree) => {
-  const buildFormattedNode = (node) => {
-    const makeFormattedLine = (keyName, valueName, operator = '') => `"${operator}${keyName}":${valueName}`;
-    const makeFormattedvalue = (item, callback) => (_.isPlainObject(item) ? `{${callback(item)}}` : callback(item));
+  const buildFormattedNode = (node) => node.map((element) => {
+    const makeFormattedLine = (data) => {
+      const { type, key, value } = data;
+      const typeDesignations = {
+        added: '+',
+        removed: '-',
+        unchanged: '',
+      };
 
-    if (_.isPlainObject(node)) {
-      return Object.keys(node).map((key) => makeFormattedLine(key, makeFormattedvalue(node[key], buildFormattedNode))).join(',');
-    }
-
-    if (!Array.isArray(node)) {
-      return (typeof node === 'string' ? `"${node}"` : node);
-    }
-
-    const result = node.flatMap((element) => {
-      const { key, value, type } = element;
       switch (type) {
         case 'nested':
-          return makeFormattedLine(key, `{${makeFormattedvalue(value, buildFormattedNode)}}`);
+          return `${JSON.stringify(element.key)}:{${buildFormattedNode(element.value)}}`;
         case 'changed': {
-          const [removedValue, addedValue] = value;
-          return `${makeFormattedLine(key, makeFormattedvalue(removedValue, buildFormattedNode), '-')},${makeFormattedLine(key, makeFormattedvalue(addedValue, buildFormattedNode), '+')}`;
+          const removedValue = data.value1;
+          const addedValue = data.value2;
+          return `${typeDesignations.removed}${JSON.stringify(key)}:${JSON.stringify(removedValue)},${typeDesignations.added}${JSON.stringify(key)}:${JSON.stringify(addedValue)}`;
         }
         case 'added':
-          return makeFormattedLine(key, makeFormattedvalue(value, buildFormattedNode), '+');
         case 'removed':
-          return makeFormattedLine(key, makeFormattedvalue(value, buildFormattedNode), '-');
         case 'unchanged':
-          return makeFormattedLine(key, makeFormattedvalue(value, buildFormattedNode));
+          return `${typeDesignations[type]}${JSON.stringify(key)}:${JSON.stringify(value)}`;
         default:
-          throw new Error(`Unknown type: "${type}"! The type should be: "innerPropertyMatch", "unchanged", "changed" or "added"`);
+          throw new Error(`Unknown status: "${type}"! The status should be: "nested", "unchanged", "changed" or "added"`);
       }
-    });
+    };
 
-    return `${result.join(',')}`;
-  };
+    return makeFormattedLine(element);
+  });
 
   return `{${buildFormattedNode(tree)}}`;
 };

@@ -12,11 +12,9 @@ test.each([
   ['stylish'],
   ['plain'],
   ['json'],
-])('%s format', (format) => {
-  const actual = (file1, file2) => genDiff(getFixturePath(file1), getFixturePath(file2), format);
-  const expected = readFile(getFixturePath(`${format}Expected.txt`));
+])('%s format', (formatName) => {
+  const actual = genDiff(getFixturePath('file1.json'), getFixturePath('file2.yaml'), formatName);
+  const expected = readFile(getFixturePath(`${formatName}`));
 
-  expect(actual('file1.json', 'file2.json')).toEqual(expected);
-  expect(actual('file1.yml', 'file2.json')).toEqual(expected);
-  expect(actual('file1.yml', 'file2.yaml')).toEqual(expected);
+  expect(actual).toEqual(expected);
 });

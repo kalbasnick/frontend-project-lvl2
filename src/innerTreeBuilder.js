@@ -1,29 +1,34 @@
 import _ from 'lodash';
 
-export default (parsedData1, parsedData2) => {
-  const buildTree = (data1, data2) => {
-    const keys = _.sortBy(_.uniq([...Object.keys(data1), ...Object.keys(data2)]));
+export default (data1, data2) => {
+  const buildTree = (obj1, obj2) => {
+    const keys = _.sortBy(_.uniq([...Object.keys(obj1), ...Object.keys(obj2)]));
 
     return keys.map((key) => {
-      const value1 = data1[key];
-      const value2 = data2[key];
+      const value1 = obj1[key];
+      const value2 = obj2[key];
 
       if (_.isPlainObject(value1) && _.isPlainObject(value2)) {
-        return { key, value: buildTree(value1, value2), type: 'nested' };
+        return { type: 'nested', key, value: buildTree(value1, value2) };
       }
-      if (!_.has(data2, key)) {
-        return { key, value: value1, type: 'removed' };
+      if (!_.has(obj2, key)) {
+        return { type: 'removed', key, value: value1 };
       }
-      if (!_.has(data1, key)) {
-        return { key, value: value2, type: 'added' };
+      if (!_.has(obj1, key)) {
+        return { type: 'added', key, value: value2 };
       }
-      if (value1 !== value2) {
-        return { key, value: [value1, value2], type: 'changed' };
+      if (!_.isEqual(value1, value2)) {
+        return {
+          type: 'changed',
+          key,
+          value1,
+          value2,
+        };
       }
 
-      return { key, value: value2, type: 'unchanged' };
+      return { type: 'unchanged', key, value: value2 };
     });
   };
 
-  return buildTree(parsedData1, parsedData2);
+  return buildTree(data1, data2);
 };

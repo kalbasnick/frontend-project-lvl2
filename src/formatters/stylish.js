@@ -4,41 +4,51 @@ export default (tree) => {
   const buildFormattedNode = (node, depth = 1) => {
     const indentIncrement = 4;
     const indentCount = indentIncrement * depth;
-    const makeIndent = (separatorCount, diffOperator = ' ', separator = ' ') => `\n${diffOperator.padStart(separatorCount - diffOperator.length)}${separator}`;
-    const makeFormattedLine = (indentSettings, keyName, valueName) => `${indentSettings}${keyName}: ${valueName}`;
-    const makeFormattedvalue = (value, callback, acc) => callback(value, acc);
+    const makeIndent = (separatorCount, typeOperator = ' ', separator = ' ') => {
+      const makeIndentFromOperator = typeOperator.padStart(separatorCount - typeOperator.length);
 
-    if (_.isPlainObject(node)) {
-      const result = Object.keys(node).reduce((acc, key) => `${acc}${makeFormattedLine(makeIndent(indentCount), key, makeFormattedvalue(node[key], buildFormattedNode, depth + 1))}`, '{');
+      return `\n${makeIndentFromOperator}${separator}`;
+    };
+    const makeFormattedLine = (data) => {
+      const { type, key, value } = data;
+      const typeOperators = {
+        added: '+',
+        removed: '-',
+        unchanged: ' ',
+      };
 
-      return `${result}${makeIndent(indentCount - indentIncrement)}}`;
-    }
-
-    if (!Array.isArray(node)) {
-      return node;
-    }
-
-    const result = node.flatMap((element) => {
-      const { key, value, type } = element;
       switch (type) {
         case 'nested':
-          return makeFormattedLine(makeIndent(indentCount), key, `{${makeFormattedvalue(value, buildFormattedNode, depth + 1)}${makeIndent(indentCount)}}`);
+          return `${makeIndent(indentCount)}${key}: {${buildFormattedNode(value, depth + 1)}${makeIndent(indentCount)}}`;
         case 'changed': {
-          const [removedValue, addedValue] = value;
-          return `${makeFormattedLine(makeIndent(indentCount, '-'), key, makeFormattedvalue(removedValue, buildFormattedNode, depth + 1))}${makeFormattedLine(makeIndent(indentCount, '+'), key, makeFormattedvalue(addedValue, buildFormattedNode, depth + 1))}`;
+          const removedValue = data.value1;
+          const addedValue = data.value2;
+
+          return `${makeIndent(indentCount, typeOperators.removed)}${key}: ${buildFormattedNode(removedValue, depth + 1)}${makeIndent(indentCount, typeOperators.added)}${key}: ${buildFormattedNode(addedValue, depth + 1)}`;
         }
         case 'added':
-          return makeFormattedLine(makeIndent(indentCount, '+'), key, makeFormattedvalue(value, buildFormattedNode, depth + 1));
         case 'removed':
-          return makeFormattedLine(makeIndent(indentCount, '-'), key, makeFormattedvalue(value, buildFormattedNode, depth + 1));
         case 'unchanged':
-          return makeFormattedLine(makeIndent(indentCount, ' '), key, makeFormattedvalue(value, buildFormattedNode, depth + 1));
+          return `${makeIndent(indentCount, typeOperators[type])}${key}: ${buildFormattedNode(value, depth + 1)}`;
         default:
-          throw new Error(`Unknown type: "${type}"! The type should be: "innerPropertyMatch", "unchanged", "changed" or "added"`);
+          throw new Error(`Unknown status: "${type}"! The status should be: "nested", "unchanged", "changed" or "added"`);
       }
-    });
+    };
 
-    return result.join('');
+    if (Array.isArray(node)) {
+      const result = node.map((element) => makeFormattedLine(element));
+
+      return result.join('');
+    }
+
+    if (_.isPlainObject(node)) {
+      const innerObjectKeys = Object.keys(node);
+      const formattedInnerObject = innerObjectKeys.map((key) => `${makeIndent(indentCount)}${key}: ${buildFormattedNode(node[key], depth + 1)}`);
+
+      return `{${formattedInnerObject.join('')}${makeIndent(indentCount - indentIncrement)}}`;
+    }
+
+    return node;
   };
 
   return `{${buildFormattedNode(tree)}\n}`;

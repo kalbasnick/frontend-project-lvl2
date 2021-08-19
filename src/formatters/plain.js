@@ -1,34 +1,38 @@
 import _ from 'lodash';
 
 export default (tree) => {
-  const buildFormattedNode = (node, ancestry = []) => {
-    const result = node.flatMap((element) => {
-      const { key, value, type } = element;
-      const makePath = (path) => path.join('.');
-      const makeFormattedvalue = (valueName) => {
-        if (_.isPlainObject(valueName)) {
-          return '[complex value]';
-        }
+  const buildFormattedNode = (node, parents = []) => {
+    const makeFormattedLine = (data) => {
+      const { type, key, value } = data;
+      const getPropertyName = (path) => path.join('.');
+      const makeFormattedValue = (valueName) => {
+        const formattedValue = _.isPlainObject(valueName) ? '[complex value]' : JSON.stringify(valueName);
+        const replaceDoubleQuotesWithSingleQuotes = (str) => str.replace(/"/g, "'");
 
-        return typeof valueName === 'string' ? `'${valueName}'` : valueName;
+        return replaceDoubleQuotesWithSingleQuotes(formattedValue);
       };
+      const propertyName = getPropertyName([...parents, key]);
+
       switch (type) {
         case 'nested':
-          return buildFormattedNode(value, [...ancestry, key]);
+          return buildFormattedNode(value, [...parents, key]);
         case 'changed': {
-          const [removedValue, addedValue] = value;
-          return `Property '${makePath([...ancestry, key])}' was updated. From ${makeFormattedvalue(removedValue)} to ${makeFormattedvalue(addedValue)}`;
+          const removedValue = data.value1;
+          const addedValue = data.value2;
+
+          return `Property '${propertyName}' was updated. From ${makeFormattedValue(removedValue)} to ${makeFormattedValue(addedValue)}`;
         }
         case 'added':
-          return `Property '${makePath([...ancestry, key])}' was added with value: ${makeFormattedvalue(value)}`;
+          return `Property '${propertyName}' was added with value: ${makeFormattedValue(value)}`;
         case 'removed':
-          return `Property '${makePath([...ancestry, key])}' was removed`;
+          return `Property '${propertyName}' was removed`;
         case 'unchanged':
           return [];
         default:
-          throw new Error(`Unknown status: "${type}"! The status should be: "innerPropertyMatch", "unchanged", "changed" or "added"`);
+          throw new Error(`Unknown status: "${type}"! The status should be: "nested", "unchanged", "changed" or "added"`);
       }
-    });
+    };
+    const result = node.flatMap((element) => makeFormattedLine(element));
 
     return result.join('\n');
   };
