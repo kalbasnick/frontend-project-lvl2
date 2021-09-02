@@ -9,7 +9,7 @@ export default (data1, data2) => {
       const value2 = obj2[key];
 
       if (_.isPlainObject(value1) && _.isPlainObject(value2)) {
-        return { type: 'nested', key, value: buildTree(value1, value2) };
+        return { type: 'nested', key, children: buildTree(value1, value2) };
       }
       if (!_.has(obj2, key)) {
         return { type: 'removed', key, value: value1 };

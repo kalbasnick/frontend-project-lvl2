@@ -1,55 +1,42 @@
 import _ from 'lodash';
 
+const indent = (indentStep, typeOperator = ' ', indentIncrement = 4, separator = ' ') => `\n${typeOperator.padStart(indentStep * indentIncrement - typeOperator.length)}${separator}`;
+
+const typeOperators = {
+  added: '+',
+  removed: '-',
+  unchanged: ' ',
+};
+
 export default (tree) => {
-  const buildFormattedNode = (node, depth = 1) => {
-    const indentIncrement = 4;
-    const indentCount = indentIncrement * depth;
-    const makeIndent = (separatorCount, typeOperator = ' ', separator = ' ') => {
-      const makeIndentFromOperator = typeOperator.padStart(separatorCount - typeOperator.length);
+  const formatNode = (node, depth = 1) => {
+    const makeFormattedValue = (value) => {
+      if (_.isPlainObject(value)) {
+        const formattedInnerObject = Object.keys(value).map((key) => `${indent(depth + 1)}${key}: ${formatNode(value[key], depth + 1)}`);
 
-      return `\n${makeIndentFromOperator}${separator}`;
+        return `{${formattedInnerObject.join('')}${indent(depth)}}`;
+      }
+
+      return value;
     };
-    const makeFormattedLine = (data) => {
-      const { type, key, value } = data;
-      const typeOperators = {
-        added: '+',
-        removed: '-',
-        unchanged: ' ',
-      };
-
+    const toStylishFormat = (data) => {
+      const { type, key } = data;
       switch (type) {
         case 'nested':
-          return `${makeIndent(indentCount)}${key}: {${buildFormattedNode(value, depth + 1)}${makeIndent(indentCount)}}`;
-        case 'changed': {
-          const removedValue = data.value1;
-          const addedValue = data.value2;
-
-          return `${makeIndent(indentCount, typeOperators.removed)}${key}: ${buildFormattedNode(removedValue, depth + 1)}${makeIndent(indentCount, typeOperators.added)}${key}: ${buildFormattedNode(addedValue, depth + 1)}`;
-        }
+          return `${indent(depth)}${key}: {${formatNode(data.children, depth + 1)}${indent(depth)}}`;
+        case 'changed':
+          return `${indent(depth, typeOperators.removed)}${key}: ${makeFormattedValue(data.value1)}${indent(depth, typeOperators.added)}${key}: ${makeFormattedValue(data.value2)}`;
         case 'added':
         case 'removed':
         case 'unchanged':
-          return `${makeIndent(indentCount, typeOperators[type])}${key}: ${buildFormattedNode(value, depth + 1)}`;
+          return `${indent(depth, typeOperators[type])}${key}: ${makeFormattedValue(data.value)}`;
         default:
           throw new Error(`Unknown status: "${type}"! The status should be: "nested", "unchanged", "changed" or "added"`);
       }
     };
 
-    if (Array.isArray(node)) {
-      const result = node.map((element) => makeFormattedLine(element));
-
-      return result.join('');
-    }
-
-    if (_.isPlainObject(node)) {
-      const innerObjectKeys = Object.keys(node);
-      const formattedInnerObject = innerObjectKeys.map((key) => `${makeIndent(indentCount)}${key}: ${buildFormattedNode(node[key], depth + 1)}`);
-
-      return `{${formattedInnerObject.join('')}${makeIndent(indentCount - indentIncrement)}}`;
-    }
-
-    return node;
+    return Array.isArray(node) ? node.map(toStylishFormat).join('') : makeFormattedValue(node);
   };
 
-  return `{${buildFormattedNode(tree)}\n}`;
+  return `{${formatNode(tree)}\n}`;
 };
