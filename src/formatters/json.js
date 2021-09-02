@@ -1,1 +1,1 @@
-export default (tree) => tree.map(JSON.stringify).join('');
+export default (tree) => JSON.stringify(tree);
