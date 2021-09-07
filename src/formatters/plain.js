@@ -1,12 +1,6 @@
 import _ from 'lodash';
 
-const makeFormattedValue = (value) => {
-  if (typeof (value) !== 'string') {
-    return _.isPlainObject(value) ? '[complex value]' : value;
-  }
-
-  return `'${value}'`;
-};
+const stringify = (value) => (_.isPlainObject(value) ? '[complex value]' : `'${String(value)}'`);
 
 export default (tree) => {
   const formatNode = (node, parents = []) => {
@@ -20,10 +14,10 @@ export default (tree) => {
           const removedValue = data.value1;
           const addedValue = data.value2;
 
-          return `Property '${propertyName}' was updated. From ${makeFormattedValue(removedValue)} to ${makeFormattedValue(addedValue)}`;
+          return `Property '${propertyName}' was updated. From ${stringify(removedValue)} to ${stringify(addedValue)}`;
         }
         case 'added':
-          return `Property '${propertyName}' was added with value: ${makeFormattedValue(value)}`;
+          return `Property '${propertyName}' was added with value: ${stringify(value)}`;
         case 'removed':
           return `Property '${propertyName}' was removed`;
         case 'unchanged':
