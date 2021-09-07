@@ -1,6 +1,12 @@
 import _ from 'lodash';
 
-const stringify = (value) => (_.isPlainObject(value) ? '[complex value]' : `'${String(value)}'`);
+const stringify = (value) => {
+  if (_.isPlainObject(value)) {
+    return '[complex value]';
+  }
+
+  return typeof (value) === 'string' ? `'${value}'` : String(value);
+};
 
 export default (tree) => {
   const formatNode = (node, parents = []) => {
